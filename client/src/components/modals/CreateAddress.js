@@ -27,6 +27,7 @@ const CreateAddress = ({open, onClose, id}) => {
 	const onSubmit = (formData) => {
 		addUserAddress(id, formData.city, formData.street, formData.home).then(data => {
 			onClose()
+			window.location.reload()
 		})
 	}
 	

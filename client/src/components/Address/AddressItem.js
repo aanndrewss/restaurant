@@ -1,21 +1,38 @@
 import React, { useState } from 'react'
-import { Box, Card, IconButton, Tooltip, Typography } from '@mui/material'
+import { Box, Card, FormControl, IconButton, TextField, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { deleteUserAddress } from '../../http/userApi'
+import { deleteUserAddress, editUserAddresses } from '../../http/userApi'
 import CreateAddress from '../modals/CreateAddress'
 import { useParams } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
 
 
 const AddressItem = ({ id, street, home, city }) => {
 	
 	const [open, setOpen] = useState(false)
-	const {userId} = useParams()
+	const [editMode, setEditMode] = useState(false)
+	const [town, setTown] = useState(city)
+	const [street1, setStreet] = useState(street)
+	const [home1, setHome] = useState(home)
+	const { userId } = useParams()
 	
 	const deleteAddress = () => {
 		if (window.confirm('Do you want delete address?')) {
-			deleteUserAddress(id)
+			deleteUserAddress(id).then(data => {
+				window.location.reload()
+			})
 		}
+	}
+	
+	const onSubmit = () => {
+		const formData = new FormData()
+		formData.append('city', town)
+		formData.append('street', street1)
+		formData.append('home', home1)
+		editUserAddresses(userId, formData.city, formData.street, formData.home).then(data => {
+			window.location.reload()
+		})
 	}
 	
 	return (
@@ -29,25 +46,25 @@ const AddressItem = ({ id, street, home, city }) => {
 				justifyContent: 'space-between'
 			}}>
 				<Tooltip title='Edit'>
-					<IconButton onClick={() => setOpen(true)}>
+					<IconButton onDoubleClick={() => setEditMode(false)} onClick={() => setEditMode(true)}>
 						<EditIcon />
 					</IconButton>
 				</Tooltip>
-				<Box sx={{ display: 'flex', flexFlow: 'row', gap: 2 }}>
-					<Typography>
-						City: <b>{city}</b>
-					</Typography>
-					<Typography>
-						Street: <b>{street}</b>
-					</Typography>
-					<Typography>
-						Home: <b>{home}</b>
-					</Typography>
-				</Box>
+				<FormControl onBlur={onSubmit} sx={{ display: 'flex', flexFlow: 'row', gap: 2 }}>
+						<Typography sx={{ display: 'flex', alignItems: 'center' }}>
+							City: {editMode ? <TextField value={town} onChange={e => setTown(e.target.value)} size='small' sx={{ width: 100 }} /> : <b>{city}</b>}
+						</Typography>
+						<Typography sx={{ display: 'flex', alignItems: 'center' }}>
+							Street: {editMode ? <TextField value={street1} onChange={e => setStreet(e.target.value)} size='small' sx={{ width: 100 }} /> : <b>{street}</b>}
+						</Typography>
+						<Typography sx={{ display: 'flex', alignItems: 'center' }}>
+							Home: {editMode ? <TextField value={home1} onChange={e => setHome(e.target.value)} size='small' sx={{ width: 100 }} /> : <b>{home}</b>}
+						</Typography>
+				</FormControl>
 				<Box>
 					<Tooltip title='Delete'>
-						<IconButton>
-							<DeleteIcon onClick={deleteAddress} />
+						<IconButton onClick={deleteAddress}>
+							<DeleteIcon />
 						</IconButton>
 					</Tooltip>
 				</Box>

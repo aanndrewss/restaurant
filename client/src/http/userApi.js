@@ -34,6 +34,12 @@ export const deleteUserAddress = async (id) => {
 	return data
 }
 
-export const editProfile = async (id) => {
+export const editUserAddresses = async (userId, city, street, home) => {
+	const {data} = await $authHost.post('api/user/' + userId, {city, street, home})
+	return data
+}
 
+export const editProfile = async (id) => {
+	const {data} = await $authHost.post('api/user/' + id)
+	return data
 }

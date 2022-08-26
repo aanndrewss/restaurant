@@ -85,6 +85,28 @@ class UserController {
 			}
 		})
 	}
+	
+	async editAddress(req, res) {
+		const { id } = req.params
+		let { city, street, home } = req.body
+		await Addresses.update(
+			{
+				city: city,
+				street: street,
+				home: home
+			},
+			{
+				where: {
+					userId: id
+				}
+			}
+		)
+	}
+	
+	async editProfile(req, res) {
+		const { id } = req.params
+	}
+	
 }
 
 module.exports = new UserController()
